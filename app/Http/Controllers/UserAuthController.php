@@ -36,6 +36,13 @@ class UserAuthController extends Controller
         return response()->json(auth()->user());
     }
 
+    public function logout()
+    {
+        auth()->logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
     public function prueba($id){
         return response()->json(['status' => $id], 200);
     }
