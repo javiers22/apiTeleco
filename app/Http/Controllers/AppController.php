@@ -59,8 +59,7 @@ class AppController extends Controller
     }
 
     public function estudiantes(Request $request)
-    {
-        //print_r(implode(",",$request->input("ids")));
+    {        
         if($request->input("llave")=="usantotomas2022*")
         {            
             $estudiantes= DB::select( DB::raw("SELECT a.NOM_TERCERO||' '||a.SEG_NOMBRE nombre, a.pri_apellido||' '||a.seg_apellido apellido
