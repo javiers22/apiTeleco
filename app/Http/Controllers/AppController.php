@@ -28,7 +28,7 @@ class AppController extends Controller
         {
             $facultades= DB::select( DB::raw("SELECT cod_unidad,nom_unidad
             FROM src_uni_academica a
-            WHERE a.ID_CIRCULO=".$request->input("id_circulo")." and a.cod_modalidad=1"));           
+            WHERE a.ID_CIRCULO=".$request->input("id_circulo")." and a.cod_modalidad=1 and a.id_sede=".$request->input("id_sede")));           
 
             return response()->json([
                 'facultades' => $facultades,        
@@ -44,9 +44,9 @@ class AppController extends Controller
     {
         if($request->input("llave")=="usantotomas2022*")
         {
-            $programas= DB::select( DB::raw("SELECT cod_unidad,nom_unidad
+            $programas= DB::select( DB::raw("SELECT cod_unidad,nom_unidad,(select max(cod_periodo) from src_act_academica where val_actividad=27 and cod_unidad='11001')cod_periodo
             FROM src_uni_academica a
-            WHERE a.cod_anterior='".$request->input("cod_unidad")."' and a.cod_modalidad<>'1'"));           
+            WHERE a.cod_anterior='".$request->input("cod_unidad")."' and a.cod_modalidad<>'1' and id_sede=".$request->input("id_sede")."and id_circulo=".$request->input("id_circulo")));           
 
             return response()->json([
                 'programas' => $programas,        
@@ -60,9 +60,10 @@ class AppController extends Controller
 
     public function estudiantes(Request $request)
     {
+        //print_r(implode(",",$request->input("ids")));
         if($request->input("llave")=="usantotomas2022*")
-        {
-            $estudiantes= DB::select( DB::raw("SELECT a.NUM_IDENTIFICACION,a.NOM_LARGO,d.cod_unidad,d.NOM_UNIDAD,c.COD_PERIODO 
+        {            
+            $estudiantes= DB::select( DB::raw("SELECT a.NOM_TERCERO||' '||a.SEG_NOMBRE nombre, a.pri_apellido||' '||a.seg_apellido apellido
             FROM bas_tercero a,src_alum_programa b,src_alum_periodo c,SRC_UNI_ACADEMICA d
             WHERE a.id_tercero=b.id_tercero
             AND b.EST_ALUMNO in(1,7)
@@ -71,7 +72,7 @@ class AppController extends Controller
             AND c.EST_MAT_FIN=1
             AND c.EST_MAT_ACA=1
             AND b.COD_UNIDAD=d.COD_UNIDAD
-            AND d.cod_unidad='".$request->input("cod_unidad")."'"));           
+            AND a.id_tercero in(".implode(",",$request->input("ids")).")"));           
 
             return response()->json([
                 'estudiantes' => $estudiantes,        
